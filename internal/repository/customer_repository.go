@@ -3,10 +3,11 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/rezaig/dbo-service/internal/helper"
 	"github.com/rezaig/dbo-service/internal/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type customerRepository struct {
@@ -18,12 +19,16 @@ func NewCustomerRepository(dbConn *sql.DB) model.CustomerRepository {
 }
 
 func (r *customerRepository) FindAll(ctx context.Context) ([]model.Customer, error) {
+	logger := log.WithFields(log.Fields{
+		"func": helper.GetFuncName(),
+	})
+
 	rows, err := sq.Select("*").
 		From("customer").
 		RunWith(r.dbConn).
 		QueryContext(ctx)
 	if err != nil {
-		log.Println("error select all, error: ", err)
+		logger.Errorf("error select all, error: %v", err)
 		return nil, err
 	}
 
@@ -32,7 +37,7 @@ func (r *customerRepository) FindAll(ctx context.Context) ([]model.Customer, err
 		var result model.Customer
 		err = rows.Scan(&result.ID, &result.Name)
 		if err != nil {
-			log.Println("error scanning, error: ", err)
+			logger.Errorf("error scanning, error: %v", err)
 			continue
 		}
 		results = append(results, result)

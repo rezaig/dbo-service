@@ -3,7 +3,9 @@ package usecase
 import (
 	"context"
 
+	"github.com/rezaig/dbo-service/internal/helper"
 	"github.com/rezaig/dbo-service/internal/model"
+	log "github.com/sirupsen/logrus"
 )
 
 type customerUsecase struct {
@@ -15,8 +17,13 @@ func NewCustomerUsecase(customerRepo model.CustomerRepository) model.CustomerUse
 }
 
 func (u *customerUsecase) FindAll(ctx context.Context) ([]model.Customer, error) {
+	logger := log.WithFields(log.Fields{
+		"func": helper.GetFuncName(),
+	})
+
 	results, err := u.customerRepo.FindAll(ctx)
 	if err != nil {
+		logger.Errorf("error find all, error: %v", err)
 		return nil, err
 	}
 

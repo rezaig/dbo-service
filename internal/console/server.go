@@ -1,7 +1,6 @@
 package console
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,6 +10,7 @@ import (
 	"github.com/rezaig/dbo-service/internal/delivery/httpsvc"
 	"github.com/rezaig/dbo-service/internal/repository"
 	"github.com/rezaig/dbo-service/internal/usecase"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -56,10 +56,10 @@ func run(_ *cobra.Command, _ []string) {
 		for {
 			select {
 			case <-sigCh:
-				log.Println("server is shutting down because of interrupt signal")
+				log.Info("server is shutting down because of interrupt signal")
 				quitCh <- true
 			case e := <-errCh:
-				log.Printf("server is shutting down because of error, error: %v\n", e)
+				log.Infof("server is shutting down because of error, error: %v\n", e)
 				quitCh <- true
 			}
 		}
@@ -81,5 +81,5 @@ func run(_ *cobra.Command, _ []string) {
 	}()
 
 	<-quitCh
-	log.Printf("server has been shutdown")
+	log.Info("server has been shutdown")
 }
