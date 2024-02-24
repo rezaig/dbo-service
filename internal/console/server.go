@@ -1,13 +1,17 @@
 package console
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/rezaig/dbo-service/internal/delivery/httpsvc"
-	"github.com/spf13/cobra"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rezaig/dbo-service/internal/db"
+	"github.com/rezaig/dbo-service/internal/delivery/httpsvc"
+	"github.com/rezaig/dbo-service/internal/repository"
+	"github.com/rezaig/dbo-service/internal/usecase"
+	"github.com/spf13/cobra"
 )
 
 var runCmd = &cobra.Command{
@@ -22,14 +26,30 @@ func init() {
 }
 
 func run(_ *cobra.Command, _ []string) {
+	dbConn := db.InitMySQLConn()
+	defer func() {
+		_ = dbConn.Close()
+	}()
+
+	// Initialize repositories
+	authRepo := repository.NewAuthRepository(dbConn)
+	customerRepo := repository.NewCustomerRepository(dbConn)
+	orderRepo := repository.NewOrderRepository(dbConn)
+
+	// Initialize usecases
+	authUsecase := usecase.NewAuthUsecase(authRepo)
+	customerUsecase := usecase.NewCustomerUsecase(customerRepo)
+	orderUsecase := usecase.NewOrderUsecase(orderRepo)
+
+	// Initialize delivery HTTP services
+	authHTTPSvc := httpsvc.NewAuthHTTPService(authUsecase)
+	customerHTTPSvc := httpsvc.NewCustomerHTTPService(customerUsecase)
+	orderHTTPSvc := httpsvc.NewOrderHTTPService(orderUsecase)
+
 	sigCh := make(chan os.Signal, 1)
 	errCh := make(chan error, 1)
 	quitCh := make(chan bool, 1)
 	signal.Notify(sigCh, os.Interrupt)
-
-	authHTTPSvc := httpsvc.NewAuthHTTPService()
-	customerHTTPSvc := httpsvc.NewCustomerHTTPService()
-	orderHTTPSvc := httpsvc.NewOrderHTTPService()
 
 	go func() {
 		// Handle graceful shutdown

@@ -1,10 +1,14 @@
 package repository
 
-import "github.com/rezaig/dbo-service/internal/model"
+import (
+	"database/sql"
+	"github.com/rezaig/dbo-service/internal/model"
+)
 
 type orderRepository struct {
+	dbConn *sql.DB
 }
 
-func NewOrderRepository() model.OrderRepository {
-	return &orderRepository{}
+func NewOrderRepository(dbConn *sql.DB) model.OrderRepository {
+	return &orderRepository{dbConn: dbConn}
 }

@@ -1,10 +1,14 @@
 package repository
 
-import "github.com/rezaig/dbo-service/internal/model"
+import (
+	"database/sql"
+	"github.com/rezaig/dbo-service/internal/model"
+)
 
 type authRepository struct {
+	dbConn *sql.DB
 }
 
-func NewAuthRepository() model.AuthRepository {
-	return &authRepository{}
+func NewAuthRepository(dbConn *sql.DB) model.AuthRepository {
+	return &authRepository{dbConn: dbConn}
 }

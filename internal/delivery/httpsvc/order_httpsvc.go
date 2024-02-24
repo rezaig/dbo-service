@@ -2,16 +2,18 @@ package httpsvc
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/rezaig/dbo-service/internal/model"
 	"net/http"
 )
 
 // OrderHTTPService :nodoc:
 type OrderHTTPService struct {
+	orderUsecase model.OrderUsecase
 }
 
 // NewOrderHTTPService :nodoc:
-func NewOrderHTTPService() *OrderHTTPService {
-	return &OrderHTTPService{}
+func NewOrderHTTPService(orderUsecase model.OrderUsecase) *OrderHTTPService {
+	return &OrderHTTPService{orderUsecase: orderUsecase}
 }
 
 func (h *OrderHTTPService) Routes(r *gin.Engine) {
