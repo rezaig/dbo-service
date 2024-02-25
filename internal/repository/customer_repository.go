@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/rezaig/dbo-service/internal/helper"
@@ -38,7 +39,7 @@ func (r *customerRepository) FindAll(ctx context.Context, params model.CustomerP
 		RunWith(r.dbConn).
 		QueryContext(ctx)
 	if err != nil {
-		logger.Errorf("error select all, error: %v", err)
+		logger.Errorf("error run query select all, error: %v", err)
 		return nil, 0, err
 	}
 
@@ -52,7 +53,7 @@ func (r *customerRepository) FindAll(ctx context.Context, params model.CustomerP
 			&result.PhoneNumber,
 			&result.CreatedAt)
 		if err != nil {
-			logger.Errorf("error scanning, error: %v", err)
+			logger.Errorf("error scanning query select all, error: %v", err)
 			continue
 		}
 		results = append(results, result)
@@ -67,14 +68,105 @@ func (r *customerRepository) FindAll(ctx context.Context, params model.CustomerP
 		RunWith(r.dbConn).
 		QueryRowContext(ctx)
 	if err != nil {
-		logger.Errorf("error select count, error: %v", err)
+		logger.Errorf("error run query select count, error: %v", err)
 		return nil, 0, err
 	}
 	var totalItems int64
 	if err = row.Scan(&totalItems); err != nil {
-		logger.Errorf("error scanning, error: %v", err)
+		logger.Errorf("error scanning query select count, error: %v", err)
 		return nil, 0, err
 	}
 
 	return results, totalItems, nil
+}
+
+func (r *customerRepository) FindByID(ctx context.Context, id int64) (*model.Customer, error) {
+	row := sq.Select("id", "name", "email", "phone_number", "created_at").
+		From("customer").
+		Where(sq.Eq{"id": id}).
+		RunWith(r.dbConn).QueryRowContext(ctx)
+
+	result := new(model.Customer)
+	err := row.Scan(
+		&result.ID,
+		&result.Name,
+		&result.Email,
+		&result.PhoneNumber,
+		&result.CreatedAt)
+	switch err {
+	case nil:
+	case sql.ErrNoRows:
+		return nil, nil
+	default:
+		log.WithFields(log.Fields{
+			"func": helper.GetFuncName(),
+			"id":   id,
+		}).Errorf("error scan query select by id, error: %v", err)
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (r *customerRepository) Update(ctx context.Context, data model.Customer, id int64) (*model.Customer, error) {
+	logger := log.WithFields(log.Fields{
+		"func": helper.GetFuncName(),
+		"data": helper.Dump(data),
+	})
+
+	timeNow := time.Now().UTC()
+	_, err := sq.Update("customer").
+		Set("name", data.Name).
+		Set("email", data.Email).
+		Set("phone_number", data.PhoneNumber).
+		Set("updated_at", timeNow).
+		Where(sq.Eq{"id": id}).
+		RunWith(r.dbConn).
+		ExecContext(ctx)
+	if err != nil {
+		logger.Errorf("error exec query update, error: %v", err)
+		return nil, err
+	}
+
+	data.ID = id
+	data.UpdatedAt = timeNow
+
+	return &data, nil
+}
+
+func (r *customerRepository) Insert(ctx context.Context, data model.Customer) (*model.Customer, error) {
+	logger := log.WithFields(log.Fields{
+		"func": helper.GetFuncName(),
+		"data": helper.Dump(data),
+	})
+
+	timeNow := time.Now().UTC()
+	_, err := sq.Insert("customer").
+		Columns("name", "email", "phone_number", "created_at").
+		Values(data.Name, data.Email, data.PhoneNumber, timeNow).
+		RunWith(r.dbConn).
+		ExecContext(ctx)
+	if err != nil {
+		logger.Errorf("error exec query insert, error: %v", err)
+		return nil, err
+	}
+
+	var insertedID int64
+	err = sq.Select("LAST_INSERT_ID() AS id").
+		RunWith(r.dbConn).
+		QueryRowContext(ctx).
+		Scan(&insertedID)
+	if err != nil {
+		logger.Errorf("error scan query select last id, error: %v", err)
+		return nil, err
+	}
+
+	data.ID = insertedID
+	data.CreatedAt = timeNow
+
+	return &data, nil
+}
+
+func (r *customerRepository) Delete(ctx context.Context, id int64) error {
+	panic("TODO")
 }
