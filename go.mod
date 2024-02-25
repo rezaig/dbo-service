@@ -1,6 +1,6 @@
 module github.com/rezaig/dbo-service
 
-go 1.19
+go 1.21
 
 require (
 	github.com/Masterminds/squirrel v1.5.4

@@ -95,7 +95,7 @@ func (r *orderRepository) FindAllByCustomerID(ctx context.Context, customerID in
 		LeftJoin("product p ON p.id=o.product_id").
 		Where(sq.Eq{"customer_id": customerID})
 	if params.Keyword != "" {
-		selectQ = selectQ.Where(sq.Like{"CAST(o.id AS CHAR)": fmt.Sprintf("%%%s%%", params.Keyword)})
+		selectCountQ = selectCountQ.Where(sq.Like{"CAST(o.id AS CHAR)": fmt.Sprintf("%%%s%%", params.Keyword)})
 	}
 	row := selectCountQ.
 		RunWith(r.dbConn).
