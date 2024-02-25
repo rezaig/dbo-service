@@ -16,16 +16,15 @@ func NewCustomerUsecase(customerRepo model.CustomerRepository) model.CustomerUse
 	return &customerUsecase{customerRepo: customerRepo}
 }
 
-func (u *customerUsecase) FindAll(ctx context.Context) ([]model.Customer, error) {
-	logger := log.WithFields(log.Fields{
-		"func": helper.GetFuncName(),
-	})
-
-	results, err := u.customerRepo.FindAll(ctx)
+func (u *customerUsecase) FindAll(ctx context.Context, params model.CustomerParams) ([]model.Customer, int64, error) {
+	results, totalItems, err := u.customerRepo.FindAll(ctx, params)
 	if err != nil {
-		logger.Errorf("error find all, error: %v", err)
-		return nil, err
+		log.WithFields(log.Fields{
+			"func":   helper.GetFuncName(),
+			"params": helper.Dump(params),
+		}).Errorf("error find all, error: %v", err)
+		return nil, 0, err
 	}
 
-	return results, err
+	return results, totalItems, nil
 }

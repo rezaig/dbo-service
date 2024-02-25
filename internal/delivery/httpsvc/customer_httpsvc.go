@@ -24,11 +24,30 @@ func (h *CustomerHTTPService) Routes(r *gin.Engine) {
 }
 
 func (h *CustomerHTTPService) FindAll(c *gin.Context) {
-	results, err := h.customerUsecase.FindAll(c.Request.Context())
+	var params model.CustomerParams
+	if err := c.BindQuery(&params); err != nil {
+		parseError(c, err)
+		return
+	}
+	if err := params.Validate(); err != nil {
+		parseError(c, err)
+		return
+	}
+
+	results, totalItems, err := h.customerUsecase.FindAll(c.Request.Context(), params)
 	if err != nil {
 		parseError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, results)
+	paginationResponse := model.PaginationResponse{
+		Pagination: model.Pagination{
+			Page:       params.Page,
+			PerPage:    params.PerPage,
+			TotalItems: totalItems,
+		},
+		Data: results,
+	}
+
+	c.JSON(http.StatusOK, paginationResponse)
 }
