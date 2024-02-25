@@ -20,10 +20,11 @@ func NewCustomerRepository(dbConn *sql.DB) model.CustomerRepository {
 
 func (r *customerRepository) FindAll(ctx context.Context) ([]model.Customer, error) {
 	logger := log.WithFields(log.Fields{
+		"ctx":  helper.Dump(ctx),
 		"func": helper.GetFuncName(),
 	})
 
-	rows, err := sq.Select("*").
+	rows, err := sq.Select("id", "name").
 		From("customer").
 		RunWith(r.dbConn).
 		QueryContext(ctx)

@@ -1,0 +1,10 @@
+port: "9104"
+mysql:
+  host: "localhost:3306"
+  database: "test"
+  username: "root"
+  password: ""
+#  max_idle_conns: 10
+#  max_open_conns: 10
+#  conn_max_lifetime: "3s"
+#  conn_max_idletime: "2s"

@@ -5,25 +5,29 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/viper"
+
 	_ "github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	address  = "localhost:3306"
-	user     = "root"
-	password = ""
-	dbname   = "test"
-)
-
 func InitMySQLConn() *sql.DB {
-	connStr := fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, address, dbname)
+	mysqlConf := viper.Sub("mysql")
+	var (
+		host     = mysqlConf.GetString("host")
+		username = mysqlConf.GetString("username")
+		password = mysqlConf.GetString("password")
+		database = mysqlConf.GetString("database")
+	)
+
+	connStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", username, password, host, database)
 	dbConn, err := sql.Open("mysql", connStr)
 	if err != nil {
 		log.Fatalf("failed to connect mysql, error: %v", err)
 	}
 
 	dbConn.SetConnMaxLifetime(time.Minute * 3)
+	dbConn.SetConnMaxIdleTime(time.Minute * 3)
 	dbConn.SetMaxOpenConns(10)
 	dbConn.SetMaxIdleConns(10)
 

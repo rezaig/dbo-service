@@ -1,9 +1,12 @@
 package console
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+
+	"github.com/spf13/viper"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rezaig/dbo-service/internal/db"
@@ -15,9 +18,9 @@ import (
 )
 
 var runCmd = &cobra.Command{
-	Use:   "server",
-	Short: "run server",
-	Long:  `This subcommand start the server`,
+	Use:   "serve",
+	Short: "start the server",
+	Long:  `This subcommand is used to start the server`,
 	Run:   run,
 }
 
@@ -77,7 +80,7 @@ func run(_ *cobra.Command, _ []string) {
 		customerHTTPSvc.Routes(r)
 		orderHTTPSvc.Routes(r)
 
-		errCh <- r.Run(":4141") // TODO: handle port on config
+		errCh <- r.Run(fmt.Sprintf(":%s", viper.GetString("port")))
 	}()
 
 	<-quitCh
