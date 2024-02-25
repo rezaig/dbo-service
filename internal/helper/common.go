@@ -16,7 +16,7 @@ func Dump(i interface{}) string {
 	return string(ToByte(i))
 }
 
-// ToByte :nodoc:
+// ToByte parses any to byte
 func ToByte(i interface{}) []byte {
 	bt, _ := json.Marshal(i)
 	return bt

@@ -8,12 +8,10 @@ import (
 	"github.com/rezaig/dbo-service/internal/model"
 )
 
-// CustomerHTTPService :nodoc:
 type CustomerHTTPService struct {
 	customerUsecase model.CustomerUsecase
 }
 
-// NewCustomerHTTPService :nodoc:
 func NewCustomerHTTPService(customerUsecase model.CustomerUsecase) *CustomerHTTPService {
 	return &CustomerHTTPService{customerUsecase: customerUsecase}
 }

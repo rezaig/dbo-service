@@ -7,12 +7,10 @@ import (
 	"github.com/rezaig/dbo-service/internal/model"
 )
 
-// AuthHTTPService :nodoc:
 type AuthHTTPService struct {
 	authUsecase model.AuthUsecase
 }
 
-// NewAuthHTTPService :nodoc:
 func NewAuthHTTPService(authUsecase model.AuthUsecase) *AuthHTTPService {
 	return &AuthHTTPService{authUsecase: authUsecase}
 }

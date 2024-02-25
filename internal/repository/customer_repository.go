@@ -89,11 +89,12 @@ func (r *customerRepository) FindByID(ctx context.Context, id int64) (*model.Cus
 		RunWith(r.dbConn).QueryRowContext(ctx)
 
 	result := new(model.Customer)
+	var phoneNumber sql.NullString
 	err := row.Scan(
 		&result.ID,
 		&result.Name,
 		&result.Email,
-		&result.PhoneNumber,
+		&phoneNumber,
 		&result.CreatedAt)
 	switch err {
 	case nil:
@@ -107,6 +108,7 @@ func (r *customerRepository) FindByID(ctx context.Context, id int64) (*model.Cus
 		return nil, err
 	}
 
+	result.PhoneNumber = phoneNumber.String
 	return result, nil
 }
 

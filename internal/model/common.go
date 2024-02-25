@@ -1,5 +1,7 @@
 package model
 
+var ClaimsCtxKey = "ClaimsCtxKey"
+
 const (
 	DefaultPage    = 1
 	DefaultPerPage = 20

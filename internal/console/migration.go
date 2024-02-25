@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
+	sq "github.com/Masterminds/squirrel"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/rezaig/dbo-service/internal/helper"
 	migrate "github.com/rubenv/sql-migrate"
@@ -68,4 +70,26 @@ func processMigration(cmd *cobra.Command, args []string) {
 	}
 
 	log.Infof("applied %d migrations!\n", n)
+
+	// Seed product
+	_, _ = sq.Insert("product").
+		Columns("id", "name", "description").
+		Values(1, "Rucika", "Rucika lorem ipsum").
+		RunWith(db).Exec()
+	// Seed customer
+	_, _ = sq.Insert("customer").
+		Columns("id", "name", "email").
+		Values(1, "Reza Indra", "mail.rezaindra@gmail.com").
+		RunWith(db).Exec()
+	// Seed account
+	hashedPassword, _ := helper.HashPassword("password123")
+	_, _ = sq.Insert("account").
+		Columns("id", "username", "password").
+		Values(1, "reza", hashedPassword).
+		RunWith(db).Exec()
+	// Seed order
+	_, _ = sq.Insert("`order`").
+		Columns("customer_id", "product_id", "quantity", "shipping_address").
+		Values(1, 1, 2, "Jl. Merdeka 17").
+		RunWith(db).Exec()
 }

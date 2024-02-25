@@ -1,13 +1,18 @@
 package model
 
 import (
+	"context"
 	"time"
 )
 
 type OrderUsecase interface {
+	FindAllByCustomerID(ctx context.Context, customerID int64, params OrderParams) ([]Order, int64, error)
+	Insert(ctx context.Context, data Order) error
 }
 
 type OrderRepository interface {
+	FindAllByCustomerID(ctx context.Context, customerID int64, params OrderParams) ([]Order, int64, error)
+	Insert(ctx context.Context, data Order) error
 }
 
 type Order struct {
@@ -18,4 +23,9 @@ type Order struct {
 	ShippingAddress string    `json:"shipping_address"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"-"`
+}
+
+type OrderParams struct {
+	CommonParams
+	PaginationParams
 }

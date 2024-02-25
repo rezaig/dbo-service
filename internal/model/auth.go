@@ -1,6 +1,14 @@
 package model
 
-import "context"
+import (
+	"context"
+	"github.com/golang-jwt/jwt/v5"
+)
+
+type CustomClaims struct {
+	AccountID int64 `json:"account_id"`
+	jwt.RegisteredClaims
+}
 
 type AuthUsecase interface {
 	Login(ctx context.Context, loginRequest LoginRequest) (token string, err error)

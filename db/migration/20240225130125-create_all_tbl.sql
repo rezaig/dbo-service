@@ -37,8 +37,8 @@ CREATE TABLE `order` (
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NULL,
     deleted_at TIMESTAMP NULL,
-    CONSTRAINT fk_order_product FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
-    CONSTRAINT fk_order_customer FOREIGN KEY (customer_id) REFERENCES customer(id) ON DELETE CASCADE
+    CONSTRAINT fk_order_product FOREIGN KEY (product_id) REFERENCES product(id),
+    CONSTRAINT fk_order_customer FOREIGN KEY (customer_id) REFERENCES customer(id)
 );
 
 -- +migrate Down
