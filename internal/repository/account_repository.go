@@ -36,3 +36,29 @@ func (r *accountRepository) Insert(ctx context.Context, data model.Account) erro
 
 	return err
 }
+
+func (r *accountRepository) FindByUsername(ctx context.Context, username string) (*model.Account, error) {
+	row := sq.Select("id", "username", "password").
+		From("account").
+		Where(sq.Eq{"username": username}).
+		RunWith(r.dbConn).QueryRowContext(ctx)
+
+	result := new(model.Account)
+	err := row.Scan(
+		&result.ID,
+		&result.Username,
+		&result.Password)
+	switch err {
+	case nil:
+	case sql.ErrNoRows:
+		return nil, nil
+	default:
+		log.WithFields(log.Fields{
+			"func":     helper.GetFuncName(),
+			"username": username,
+		}).Errorf("error scan query select by username, error: %v", err)
+		return nil, err
+	}
+
+	return result, nil
+}

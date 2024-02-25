@@ -7,6 +7,7 @@ import (
 
 type AccountRepository interface {
 	Insert(ctx context.Context, data Account) error
+	FindByUsername(ctx context.Context, username string) (*Account, error)
 }
 
 type Account struct {

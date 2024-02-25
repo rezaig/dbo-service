@@ -25,8 +25,19 @@ func (h *AuthHTTPService) Routes(r *gin.Engine) {
 }
 
 func (h *AuthHTTPService) Login(c *gin.Context) {
-	// TODO
-	c.String(http.StatusOK, "login")
+	var bodyReq model.LoginRequest
+	if err := c.Bind(&bodyReq); err != nil {
+		parseError(c, err)
+		return
+	}
+
+	token, err := h.authUsecase.Login(c.Request.Context(), bodyReq)
+	if err != nil {
+		parseError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, model.LoginResponse{AccessToken: token})
 }
 
 func (h *AuthHTTPService) Register(c *gin.Context) {

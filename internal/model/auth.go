@@ -3,6 +3,7 @@ package model
 import "context"
 
 type AuthUsecase interface {
+	Login(ctx context.Context, loginRequest LoginRequest) (token string, err error)
 	Register(ctx context.Context, registerRequest RegisterRequest) (token string, err error)
 }
 
