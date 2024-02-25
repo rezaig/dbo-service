@@ -4,7 +4,10 @@ mysql:
   database: "test"
   username: "root"
   password: ""
-#  max_idle_conns: 10
-#  max_open_conns: 10
-#  conn_max_lifetime: "3s"
-#  conn_max_idletime: "2s"
+  max_idle_conns: 10
+  max_open_conns: 10
+  conn_max_lifetime: "3s"
+  conn_max_idletime: "2s"
+jwt:
+  signing_key: "bq6M68YCXnv2iltpH3h6dz51xn2Uv3dh"
+  exp: "24h"

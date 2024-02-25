@@ -63,6 +63,7 @@ func (u *customerUsecase) Update(ctx context.Context, data model.Customer, id in
 		logger.Errorf("error update data by id from repo, error: %v", err)
 		return nil, err
 	}
+	updatedData.CreatedAt = result.CreatedAt
 
 	return updatedData, nil
 }

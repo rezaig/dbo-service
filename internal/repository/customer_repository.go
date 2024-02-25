@@ -46,16 +46,18 @@ func (r *customerRepository) FindAll(ctx context.Context, params model.CustomerP
 	var results []model.Customer
 	for rows.Next() {
 		var result model.Customer
+		var phoneNumber sql.NullString
 		err = rows.Scan(
 			&result.ID,
 			&result.Name,
 			&result.Email,
-			&result.PhoneNumber,
+			&phoneNumber,
 			&result.CreatedAt)
 		if err != nil {
 			logger.Errorf("error scanning query select all, error: %v", err)
 			continue
 		}
+		result.PhoneNumber = phoneNumber.String
 		results = append(results, result)
 	}
 
@@ -140,10 +142,15 @@ func (r *customerRepository) Insert(ctx context.Context, data model.Customer) (*
 		"data": helper.Dump(data),
 	})
 
+	var phoneNumber sql.NullString
+	if data.PhoneNumber != "" {
+		phoneNumber = sql.NullString{String: data.PhoneNumber, Valid: true}
+	}
+
 	timeNow := time.Now().UTC()
 	_, err := sq.Insert("customer").
 		Columns("name", "email", "phone_number", "created_at").
-		Values(data.Name, data.Email, data.PhoneNumber, timeNow).
+		Values(data.Name, data.Email, phoneNumber, timeNow).
 		RunWith(r.dbConn).
 		ExecContext(ctx)
 	if err != nil {

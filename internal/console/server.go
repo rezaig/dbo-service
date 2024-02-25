@@ -35,12 +35,12 @@ func run(_ *cobra.Command, _ []string) {
 	}()
 
 	// Initialize repositories
-	authRepo := repository.NewAuthRepository(dbConn)
+	accountRepo := repository.NewAccountRepository(dbConn)
 	customerRepo := repository.NewCustomerRepository(dbConn)
 	orderRepo := repository.NewOrderRepository(dbConn)
 
 	// Initialize usecases
-	authUsecase := usecase.NewAuthUsecase(authRepo)
+	authUsecase := usecase.NewAuthUsecase(accountRepo, customerRepo)
 	customerUsecase := usecase.NewCustomerUsecase(customerRepo)
 	orderUsecase := usecase.NewOrderUsecase(orderRepo)
 

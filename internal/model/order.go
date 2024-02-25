@@ -1,6 +1,8 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type OrderUsecase interface {
 }
@@ -15,5 +17,5 @@ type Order struct {
 	Quantity        int64     `json:"quantity"`
 	ShippingAddress string    `json:"shipping_address"`
 	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	UpdatedAt       time.Time `json:"-"`
 }

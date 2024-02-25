@@ -12,12 +12,11 @@ import (
 )
 
 func InitMySQLConn() *sql.DB {
-	mysqlConf := viper.Sub("mysql")
 	var (
-		host     = mysqlConf.GetString("host")
-		username = mysqlConf.GetString("username")
-		password = mysqlConf.GetString("password")
-		database = mysqlConf.GetString("database")
+		host     = viper.GetString("mysql.host")
+		username = viper.GetString("mysql.username")
+		password = viper.GetString("mysql.password")
+		database = viper.GetString("mysql.database")
 	)
 
 	connStr := fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", username, password, host, database)

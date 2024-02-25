@@ -1,9 +1,10 @@
 package httpsvc
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rezaig/dbo-service/internal/model"
-	"net/http"
 )
 
 // AuthHTTPService :nodoc:
@@ -19,8 +20,27 @@ func NewAuthHTTPService(authUsecase model.AuthUsecase) *AuthHTTPService {
 func (h *AuthHTTPService) Routes(r *gin.Engine) {
 	g := r.Group("/auth")
 
-	g.GET("/login", func(c *gin.Context) {
-		// TODO: implement this
-		c.String(http.StatusOK, "login")
-	})
+	g.POST("/login", h.Login)
+	g.POST("/register", h.Register)
+}
+
+func (h *AuthHTTPService) Login(c *gin.Context) {
+	// TODO
+	c.String(http.StatusOK, "login")
+}
+
+func (h *AuthHTTPService) Register(c *gin.Context) {
+	var bodyReq model.RegisterRequest
+	if err := c.Bind(&bodyReq); err != nil {
+		parseError(c, err)
+		return
+	}
+
+	token, err := h.authUsecase.Register(c.Request.Context(), bodyReq)
+	if err != nil {
+		parseError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, model.LoginResponse{AccessToken: token})
 }
