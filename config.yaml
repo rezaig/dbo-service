@@ -1,9 +1,9 @@
 port: "9104"
 mysql:
-  host: "localhost:3306"
-  database: "test"
+  host: "db-mysql:3306"
+  database: "dbo_db"
   username: "root"
-  password: ""
+  password: "4kdatxchdnxr8zs"
   max_idle_conns: 10
   max_open_conns: 10
   conn_max_lifetime: "3s"
